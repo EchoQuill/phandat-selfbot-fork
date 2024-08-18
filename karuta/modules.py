@@ -67,12 +67,11 @@ class Modules:
 		self.client.logger.info(f"Dropped in {channel}")
 		self.client.data.stat.drop_card += 1
 
-	async def grab_card(self, message, position, runtime, retry_times, image):
+	async def grab_card(self, message, position, number, runtime, retry_times, image):
 		if retry_times >= int(self.client.data.config.error_retry_times):
 			self.client.logger.info(f"Stop checking grabbing card button after {self.client.data.config.error_retry_times} retry times")
 			return
 
-		number = position + 1
 		if message.components:
 			async for m in message.channel.history(limit = self.client.data.config.error_retry_times):
 				if m.id == message.id and m.components and not m.components[0].children[0].disabled:
@@ -82,12 +81,18 @@ class Modules:
 					break
 			else:
 				retry_times += 1
-				await self.grab_card(message, position, runtime, retry_times)
+				await self.grab_card(message, position, number, runtime, retry_times, image)
+				return
 		else:
-			emojis = self.client.data.emoji.number
-			position = emojis[position] if 0 <= position < len(emojis) else position
-			await message.add_reaction(position)
-			clicker = "emoji"
+			try:
+				emojis = self.client.data.emoji.number
+				position = emojis[position] if 0 <= position < len(emojis) else position
+				await message.add_reaction(position)
+				clicker = "emoji"
+			except discord.errors.Forbidden:
+				retry_times += 1
+				await self.grab_card(message, position, runtime, retry_times, image)
+				return
 
 		self.client.logger.info(f"Click {clicker} {number} in {message.channel} ({(time.time() - runtime):.5f}s)")
 
@@ -159,7 +164,8 @@ class Modules:
 				self.client.logger.warning(f"Cards prints has under {self.client.data.config.filter['print']}")
 				return
 			position = prints.index(lowest)
-			await self.grab_card(message, position, runtime, 0, image)
+			number = position + 1
+			await self.grab_card(message, position, number, runtime, 0, image)
 		finally:
 			self.client.data.available.checking = False
 
