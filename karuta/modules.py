@@ -33,7 +33,7 @@ class Modules:
 		if message.author.id != self.client.data.bot.id:
 			return
 
-		matches = re.findall(f"<@{self.client.user.id}>, you must wait `(.*?)` before (.*?)", message.content)
+		matches = re.findall(f"<@{self.client.user.id}>, you must wait `(.*?)` before (.*?) cards.", message.content)
 		if not matches:
 			return
 		matches = matches[0]
@@ -45,10 +45,10 @@ class Modules:
 		elif "minutes" in matches[0]:
 			cooldown = int(re.findall(r'\d+', matches[0])[0]) * 60
 
-		if matches[1] == "dropping":
+		if matches[1] == "dropping more":
 			self.client.logger.info(f"Drop more cards after {matches[0]}")
 			self.client.data.cooldown.drop = cooldown + time.time()
-		if matches[1] == "grabbing":
+		if matches[1] == "grabbing another":
 			self.client.logger.info(f"Grab another card after {matches[0]}")
 			self.client.data.cooldown.grab = cooldown + time.time()
 
@@ -68,12 +68,13 @@ class Modules:
 		self.client.data.stat.drop_card += 1
 
 	async def grab_card(self, message, position, runtime, retry_times, image):
-		if retry_times >= 25:
+		if retry_times >= int(self.client.data.config.error_retry_times):
+			self.client.logger.info(f"Stop checking grabbing card button after {self.client.data.config.error_retry_times} retry times")
 			return
 
 		number = position + 1
 		if message.components:
-			async for m in message.channel.history(limit = 25):
+			async for m in message.channel.history(limit = self.client.data.config.error_retry_times):
 				if m.id == message.id and m.components and not m.components[0].children[0].disabled:
 					button = m.components[0].children[position]
 					await button.click()
@@ -134,6 +135,8 @@ class Modules:
 			amount = int(amount[0]) if amount else None
 			if not amount:
 				return
+			
+			self.client.logger.info(f"Detect a karuta image ({message.id})")
 
 			runtime = time.time()
 			self.client.data.available.checking = True
@@ -144,6 +147,7 @@ class Modules:
 			result = list(filter(bool, await self.ocr_image(image[365:390], 5)))
 
 			if len(result) != amount:
+				self.client.logger.warning(f"Incorrect image to text")
 				return
 			prints = []
 			for i in range(0, amount):
@@ -152,6 +156,7 @@ class Modules:
 
 			lowest = min(prints)
 			if lowest > int(self.client.data.config.filter['print']):
+				self.client.logger.warning(f"Cards prints has under {self.client.data.config.filter['print']}")
 				return
 			position = prints.index(lowest)
 			await self.grab_card(message, position, runtime, 0, image)
