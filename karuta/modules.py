@@ -94,7 +94,7 @@ class Modules:
 				await self.grab_card(message, position, runtime, retry_times, image)
 				return
 
-		self.client.logger.info(f"Click {clicker} {number} in {message.channel} ({message.id}) ({(time.time() - runtime):.5f} seconds)")
+		self.client.logger.info(f"Click {clicker} {number} ({(time.time() - runtime):.5f} seconds)")
 
 		try:
 			grabbing_message = await self.client.wait_for("message", check = lambda m: m.author.id == self.client.data.bot.id and m.channel.id == message.channel.id and (f"<@{self.client.user.id}> took the" in m.content or "fought off" in m.content), timeout = 5)
