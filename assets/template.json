@@ -138,7 +138,8 @@
 
 		"blacklist": {
 			"user_id": [],
-			"channel_id": []
+			"channel_id": [],
+			"guild_id": []
 		},
 
 		"topgg": true,

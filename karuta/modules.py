@@ -131,10 +131,6 @@ class Modules:
 				return
 			if message.author.id != self.client.data.bot.id:
 				return
-			if any(f"<@{user_id}>" in message.content for user_id in self.client.data.config.blacklist['user_id']):
-				return
-			if message.channel.id in self.client.data.config.blacklist['channel_id']:
-				return
 
 			amount = re.findall(r"dropping ([0-9]+) cards", message.content)
 			amount = int(amount[0]) if amount else None
@@ -142,6 +138,16 @@ class Modules:
 				return
 			
 			self.client.logger.info(f"Detect a karuta image in {message.channel} ({message.id})")
+
+			if any(f"<@{user_id}>" in message.content for user_id in self.client.data.config.blacklist['user_id']):
+				self.client.logger.info(f"Message is on user id blacklist ({message.author.id})")
+				return
+			if message.channel.id in self.client.data.config.blacklist['channel_id']:
+				self.client.logger.info(f"Message is on channel id blacklist ({message.channel.id})")
+				return
+			if message.guild.id in self.client.data.config.blacklist['guild_id']:
+				self.client.logger.info(f"Message is on guild id blacklist ({message.guild.id})")
+				return
 
 			runtime = time.time()
 			self.client.data.available.checking = True
