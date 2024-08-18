@@ -64,7 +64,7 @@ class Modules:
 
 		channel = self.client.get_channel(int(random.choice(self.client.data.config.drop_card['channel_id'])))
 		await channel.send(f"{self.client.data.discord.prefix}d")
-		self.client.logger.info(f"Dropped in {channel}")
+		self.client.logger.info(f"Dropped in {channel} ({channel.id})")
 		self.client.data.stat.drop_card += 1
 
 	async def grab_card(self, message, position, number, runtime, retry_times, image):
@@ -94,7 +94,7 @@ class Modules:
 				await self.grab_card(message, position, runtime, retry_times, image)
 				return
 
-		self.client.logger.info(f"Click {clicker} {number} in {message.channel} ({(time.time() - runtime):.5f}s)")
+		self.client.logger.info(f"Click {clicker} {number} in {message.channel} ({message.id}) ({(time.time() - runtime):.5f} seconds)")
 
 		try:
 			grabbing_message = await self.client.wait_for("message", check = lambda m: m.author.id == self.client.data.bot.id and m.channel.id == message.channel.id and (f"<@{self.client.user.id}> took the" in m.content or "fought off" in m.content), timeout = 5)
@@ -141,7 +141,7 @@ class Modules:
 			if not amount:
 				return
 			
-			self.client.logger.info(f"Detect a karuta image ({message.id})")
+			self.client.logger.info(f"Detect a karuta image in {message.channel} ({message.id})")
 
 			runtime = time.time()
 			self.client.data.available.checking = True
@@ -152,7 +152,7 @@ class Modules:
 			result = list(filter(bool, await self.ocr_image(image[365:390], 5)))
 
 			if len(result) != amount:
-				self.client.logger.warning(f"Incorrect image to text")
+				self.client.logger.warning(f"Incorrect image to text (OCR)")
 				return
 			prints = []
 			for i in range(0, amount):
