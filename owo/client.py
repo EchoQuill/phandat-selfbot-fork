@@ -3,6 +3,7 @@ import discord
 from owo.data import Data
 from public.log import Log
 from owo.quest import Quest
+from public.topgg import Topgg
 from owo.tasks import Tasks
 from owo.modules import Modules
 from owo.commands import Commands
@@ -17,6 +18,7 @@ class OwOSelfbot(discord.Client):
 		self.data = Data(token)
 		self.log = Log(self)
 		self.quest = Quest(self)
+		self.topgg = Topgg(self)
 		self.tasks = Tasks(self)
 		self.modules = Modules(self)
 		self.commands = Commands(self)
