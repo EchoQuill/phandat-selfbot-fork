@@ -28,7 +28,7 @@ class Log:
 		self.client = client
 
 	async def create(self, name):
-		logger = logging.getLogger(f"[{name.capitalize()}] - {str(self.client.user.name)}")
+		logger = logging.getLogger(f"[{name.upper()}] - {str(self.client.user.name)}")
 		logger.setLevel(logging.DEBUG)
 		console_handler = logging.StreamHandler()
 		console_handler.setFormatter(CustomFormatter())
