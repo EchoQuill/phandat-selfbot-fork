@@ -166,9 +166,10 @@ class KarutaManager:
 	def blacklist(self, token, config):
 		print(f"[!] What do you wanna block")
 		print(f"Recent: (User id: {config[token]['blacklist']['user_id']}/Channel id: {config[token]['blacklist']['channel_id']})")
-		select = inquirer.checkbox("Move ↑↓ and SPACE to choose, then ENTER to select", choices = ['User id', 'Channel id'])
+		select = inquirer.checkbox("Move ↑↓ and SPACE to choose, then ENTER to select", choices = ['User id', 'Channel id', 'Guild id'])
 		config[token]['blacklist']['user_id'] = []
 		config[token]['blacklist']['channel_id'] = []
+		config[token]['blacklist']['guild_id'] = []
 
 		if "User id" in select:
 			while True:
@@ -205,6 +206,24 @@ class KarutaManager:
 						print("[-] Must be a number")
 				channel_id.append(x)
 			config[token]['blacklist']['channel_id'] = channel_id
+
+		if "Guild id" in select:
+			while True:
+				try:
+					amount = int(input(f"[!] Enter the amount of guild id to block (E.g: 3) (Recent: {config[token]['blacklist']['guild_id']}): ")) + 1
+					break
+				except ValueError:
+					print("[-] Must be a number")
+			guild_id = []
+			for num in range(1, amount):
+				while True:
+					try:
+						x = int(input(f"[!] Enter the blocked guild id {num}: "))
+						break
+					except ValueError:
+						print("[-] Must be a number")
+				guild_id.append(x)
+			config[token]['blacklist']['guild_id'] = guild_id
 
 	def topgg(self, token, config):
 		print(f"[!] Vote top.gg (Require chorme) (Recent: {config[token]['topgg']})")
