@@ -33,11 +33,8 @@ class Modules:
 		if message.author.id != self.client.data.bot.id:
 			return
 
-		matches = re.findall(f"<@{self.client.user.id}>, you must wait `(.*?)` before (.*?) cards.", message.content)
+		matches = re.findall(f"<@{self.client.user.id}>, you must wait `(.*?)` before", message.content)
 		if not matches:
-			return
-		matches = matches[0]
-		if len(matches) != 2:
 			return
 
 		if "seconds" in matches[0]:
@@ -45,10 +42,10 @@ class Modules:
 		elif "minutes" in matches[0]:
 			cooldown = int(re.findall(r'\d+', matches[0])[0]) * 60
 
-		if matches[1] == "dropping more":
+		if "dropping more" in message.content:
 			self.client.logger.info(f"Drop more cards after {matches[0]}")
 			self.client.data.cooldown.drop = cooldown + time.time()
-		if matches[1] == "grabbing another":
+		if "grabbing another" in message.content:
 			self.client.logger.info(f"Grab another card after {matches[0]}")
 			self.client.data.cooldown.grab = cooldown + time.time()
 
