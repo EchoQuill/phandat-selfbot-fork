@@ -31,20 +31,27 @@ class Mode:
 	def homepage(self):
 		with open(self.file) as file:
 			config = json.load(file)
-		select = inquirer.list_input("Move ↑↓ and ENTER to select", choices = ['Back', 'OwO Selfbot'])
+		select = inquirer.list_input("Move ↑↓ and ENTER to select", choices = ['Back', 'OwO Selfbot', 'Karuta Selfbot'])
 		if select == "Back":
 			return
 		if select == "OwO Selfbot":
-			self.owo(config)
+			self.owo_selfbot(config)
+		if select == "Karuta Selfbot":
+			self.karuta_selfbot(config)
 		with open(self.file, "w") as file:
 			json.dump(config, file, indent = 4)
 		print("[+] Saved!")
 		self.homepage()
 
-	def owo(self, config):
+	def owo_selfbot(self, config):
 		print(f"[!] OwO Selfbot (Recent: {config['owo']})")
 		select = inquirer.list_input("Move ↑↓ and ENTER to select", choices = self.mode)
 		config['owo'] = select == "Yes"
+
+	def karuta_selfbot(self, config):
+		print(f"[!] Karuta Selfbot (Recent: {config['karuta']})")
+		select = inquirer.list_input("Move ↑↓ and ENTER to select", choices = self.mode)
+		config['karuta'] = select == "Yes"
 
 def start():
 	select = inquirer.list_input("Move ↑↓ and ENTER to select", choices = ['Key', 'Mode', 'OwO Manager', 'Karuta Manager'])
