@@ -33,7 +33,7 @@ class Modules:
 		if message.author.id != self.client.data.bot.id:
 			return
 
-		matches = re.findall(f"<@{self.client.user.id}>, you must wait `(.*?)` before (.*?) more cards.", message.content)
+		matches = re.findall(f"<@{self.client.user.id}>, you must wait `(.*?)` before (.*?)", message.content)
 		if not matches:
 			return
 		matches = matches[0]
@@ -67,13 +67,13 @@ class Modules:
 		self.client.logger.info(f"Dropped in {channel}")
 		self.client.data.stat.drop_card += 1
 
-	async def grab_card(self, message, position, runtime, retry_times):
-		if retry_times >= int(self.client.data.config.error_retry_times):
+	async def grab_card(self, message, position, runtime, retry_times, image):
+		if retry_times >= 25:
 			return
 
 		number = position + 1
 		if message.components:
-			async for m in message.channel.history(limit = 10):
+			async for m in message.channel.history(limit = 25):
 				if m.id == message.id and m.components and not m.components[0].children[0].disabled:
 					button = m.components[0].children[position]
 					await button.click()
@@ -100,6 +100,11 @@ class Modules:
 				self.client.data.cooldown.grab = 60 + time.time()
 		except asyncio.TimeoutError:
 			self.client.logger.error(f"Couldn't get grabbing message")
+
+		if self.client.data.config.log_image:
+			file = f"logs/karuta/image/{message.id}.png"
+			cv2.imwrite(file, image)
+			self.client.logger.info(f"Added {file}")
 
 		await self.client.webhooks.send(
 			content = self.client.data.discord.mention,
@@ -136,11 +141,6 @@ class Modules:
 			with Image.open(io.BytesIO(requests.get(message.attachments[0].url).content)) as image:
 				image = numpy.array(image)
 
-			if self.client.data.config.log_image:
-				file = f"logs/karuta/image/{message.id}.png"
-				cv2.imwrite(file, image)
-				self.client.logger.info(f"Added {file}")
-
 			result = list(filter(bool, await self.ocr_image(image[365:390], 5)))
 
 			if len(result) != amount:
@@ -154,7 +154,7 @@ class Modules:
 			if lowest > int(self.client.data.config.filter['print']):
 				return
 			position = prints.index(lowest)
-			await self.grab_card(message, position, runtime, 0)
+			await self.grab_card(message, position, runtime, 0, image)
 		finally:
 			self.client.data.available.checking = False
 
@@ -169,7 +169,7 @@ class Modules:
 			api_key = random.choice(self.client.data.config.ocr_space)
 			response = requests.post('https://api.ocr.space/parse/image', files = {"image.png": image}, data = {'apikey': api_key, 'OCREngine': 2})
 			result = json.loads(response.content.decode())['ParsedResults'][0]['ParsedText']
-			result = result.split("\n")
+			result = result.split("\n") #OCREngine 1 (\r\n) - OCREngine (\n)
 			return result
 
 	def filter_command(self, message):
