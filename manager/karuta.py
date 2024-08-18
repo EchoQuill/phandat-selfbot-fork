@@ -11,7 +11,7 @@ class KarutaManager:
 
 		self.features = [
 			"Select all",
-			"OCR Space",
+			"OCR Space (Required)",
 			"Drop card",
 			"Filter (Print)",
 			"Blacklist",
@@ -81,7 +81,7 @@ class KarutaManager:
 			if "Select all" in select:
 				select_all = True
 
-		if select_all or "OCR Space" in select:
+		if select_all or "OCR Space (Required)" in select:
 			self.ocr_space(token, config)
 
 		if select_all or "Drop card" in select:
@@ -119,6 +119,7 @@ class KarutaManager:
 		print("[+] Saved!")
 
 	def ocr_space(self, token, config):
+		print("[!] Get OCR Space API in https://ocr.space/ocrapi/freekey")
 		while True:
 			try:
 				amount = int(input(f"[!] Enter the amount of OCR Space API for image analysis (E.g: 1) (Recent: {config[token]['ocr_space']}): ")) + 1
