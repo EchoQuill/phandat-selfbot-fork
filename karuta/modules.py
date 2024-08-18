@@ -98,7 +98,7 @@ class Modules:
 
 		try:
 			grabbing_message = await self.client.wait_for("message", check = lambda m: m.author.id == self.client.data.bot.id and m.channel.id == message.channel.id and (f"<@{self.client.user.id}> took the" in m.content or "fought off" in m.content), timeout = 5)
-			if f"<@{self.client.user.id}> took the" in grabbing_message.content:
+			if f"<@{self.client.user.id}> took the" in grabbing_message.content or f"<@{self.client.user.id}> fought off" in grabbing_message.content:
 				self.client.logger.info(f"Grabbed card number {number}")
 				self.client.data.cooldown.grab = 600 + time.time()
 			else:
@@ -113,7 +113,6 @@ class Modules:
 			self.client.logger.info(f"Added {file}")
 
 		await self.client.webhooks.send(
-			content = self.client.data.discord.mention,
 			title = f"🎴 GRAB CARD {number} 🎴",
 			description = f"{self.client.data.emoji.arrow}{message.jump_url}",
 			color = discord.Colour.random(),
