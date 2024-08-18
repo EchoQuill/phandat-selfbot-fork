@@ -69,7 +69,7 @@ class Modules:
 
 	async def grab_card(self, message, position, number, runtime, retry_times, image):
 		if retry_times >= int(self.client.data.config.error_retry_times):
-			self.client.logger.info(f"Stop checking grabbing card button after {self.client.data.config.error_retry_times} retry times")
+			self.client.logger.info(f"Stop checking grabbing card after {self.client.data.config.error_retry_times} retry times")
 			return
 
 		if message.components:
