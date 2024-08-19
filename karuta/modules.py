@@ -188,7 +188,7 @@ class Modules:
 				result = json.loads(response.content.decode())['ParsedResults'][0]['ParsedText']
 				result = result.split("\n") #OCREngine 1 (\r\n) - OCREngine (\n)
 				return result
-			except KeyError:
+			except (KeyError, IndexError):
 				return
 
 	def filter_command(self, message):
