@@ -58,8 +58,8 @@ class Selfbot:
 
 class Cooldown:
 	def __init__(self):
-		self.drop = 0
-		self.grab = 0
+		self.drop_card = 0
+		self.grab_card = 0
 
 class Available:
 	def __init__(self):

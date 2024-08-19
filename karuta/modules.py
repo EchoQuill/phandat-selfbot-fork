@@ -44,31 +44,33 @@ class Modules:
 
 		if "dropping more" in message.content:
 			self.client.logger.info(f"Drop more cards after {matches[0]}")
-			self.client.data.cooldown.drop = cooldown + time.time()
+			self.client.data.cooldown.drop_card = cooldown + time.time()
 		if "grabbing another" in message.content:
 			self.client.logger.info(f"Grab another card after {matches[0]}")
-			self.client.data.cooldown.grab = cooldown + time.time()
+			self.client.data.cooldown.grab_card = cooldown + time.time()
 
 	async def drop_card(self):
 		if not self.client.data.available.selfbot:
 			return
 		if self.client.data.available.checking:
 			return
-		if self.client.data.cooldown.drop - time.time() > 0:
+		if self.client.data.cooldown.drop_card - time.time() > 0:
 			return
-		if self.client.data.cooldown.grab - time.time() > 0:
+		if self.client.data.cooldown.grab_card - time.time() > 0:
 			return
 
 		channel = self.client.get_channel(int(random.choice(self.client.data.config.drop_card['channel_id'])))
 		await channel.send(f"{self.client.data.discord.prefix}d")
 		self.client.logger.info(f"Dropped in {channel} ({channel.id})")
+		self.client.data.cooldown.drop_card = 1800 + time.time()
 		self.client.data.stat.drop_card += 1
 
-	async def grab_card(self, message, position, number, runtime, retry_times, image):
+	async def grab_card(self, message, position, runtime, retry_times, image):
 		if retry_times >= int(self.client.data.config.error_retry_times):
 			self.client.logger.info(f"Stop checking grabbing card after {self.client.data.config.error_retry_times} retry times")
 			return
 
+		number = position + 1
 		if message.components:
 			async for m in message.channel.history(limit = self.client.data.config.error_retry_times):
 				if m.id == message.id and m.components and not m.components[0].children[0].disabled:
@@ -78,13 +80,12 @@ class Modules:
 					break
 			else:
 				retry_times += 1
-				await self.grab_card(message, position, number, runtime, retry_times, image)
+				await self.grab_card(message, position, runtime, retry_times, image)
 				return
 		else:
 			try:
-				emojis = self.client.data.emoji.number
-				position = emojis[position] if 0 <= position < len(emojis) else position
-				await message.add_reaction(position)
+				emoji = self.client.data.emoji.number[position] if 0 <= position < len(self.client.data.emoji.number) else position
+				await message.add_reaction(emoji)
 				clicker = "emoji"
 			except discord.errors.Forbidden:
 				retry_times += 1
@@ -97,10 +98,10 @@ class Modules:
 			grabbing_message = await self.client.wait_for("message", check = lambda m: m.author.id == self.client.data.bot.id and m.channel.id == message.channel.id and (f"<@{self.client.user.id}> took the" in m.content or "fought off" in m.content), timeout = 5)
 			if f"<@{self.client.user.id}> took the" in grabbing_message.content or f"<@{self.client.user.id}> fought off" in grabbing_message.content:
 				self.client.logger.info(f"Grabbed card number {number}")
-				self.client.data.cooldown.grab = 600 + time.time()
+				self.client.data.cooldown.grab_card = 600 + time.time()
 			else:
 				self.client.logger.info(f"Someone fought off and took card number {number}")
-				self.client.data.cooldown.grab = 60 + time.time()
+				self.client.data.cooldown.grab_card = 60 + time.time()
 		except asyncio.TimeoutError:
 			self.client.logger.error(f"Couldn't get grabbing message")
 
@@ -123,7 +124,7 @@ class Modules:
 				return
 			if self.client.data.available.checking:
 				return
-			if self.client.data.cooldown.grab - time.time() > 0:
+			if self.client.data.cooldown.grab_card - time.time() > 0:
 				return
 			if message.author.id != self.client.data.bot.id:
 				return
@@ -152,10 +153,13 @@ class Modules:
 				image = numpy.array(image)
 
 			result = list(filter(bool, await self.ocr_image(image[365:390], 5)))
-
+			if not result:
+				self.client.logger.error(f"Error image to text (OCR)")
+				return
 			if len(result) != amount:
 				self.client.logger.warning(f"Incorrect image to text (OCR)")
 				return
+
 			prints = []
 			for i in range(0, amount):
 				answer = re.findall(r'\d+', result[i])[0]
@@ -163,27 +167,29 @@ class Modules:
 
 			lowest = min(prints)
 			if lowest > int(self.client.data.config.filter['print']):
-				self.client.logger.warning(f"Cards prints has under {self.client.data.config.filter['print']}")
+				self.client.logger.info(f"Cards prints has under {self.client.data.config.filter['print']}")
 				return
 			position = prints.index(lowest)
-			number = position + 1
-			await self.grab_card(message, position, number, runtime, 0, image)
+			await self.grab_card(message, position, runtime, 0, image)
 		finally:
 			self.client.data.available.checking = False
 
 	async def ocr_image(self, image, scale):
-			# image = cv2.resize(image, None, fx = scale, fy = scale, interpolation=cv2.INTER_LINEAR)
-			nothing, image_encode = cv2.imencode('.png', image)
-			string_encode = image_encode.tobytes()
-			image_byteio = io.BytesIO(string_encode)
-			image_byteio.name = 'image.png'
-			image = io.BufferedReader(image_byteio)
+			try:
+				# image = cv2.resize(image, None, fx = scale, fy = scale, interpolation=cv2.INTER_LINEAR)
+				nothing, image_encode = cv2.imencode('.png', image)
+				string_encode = image_encode.tobytes()
+				image_byteio = io.BytesIO(string_encode)
+				image_byteio.name = 'image.png'
+				image = io.BufferedReader(image_byteio)
 
-			api_key = random.choice(self.client.data.config.ocr_space)
-			response = requests.post('https://api.ocr.space/parse/image', files = {"image.png": image}, data = {'apikey': api_key, 'OCREngine': 2})
-			result = json.loads(response.content.decode())['ParsedResults'][0]['ParsedText']
-			result = result.split("\n") #OCREngine 1 (\r\n) - OCREngine (\n)
-			return result
+				api_key = random.choice(self.client.data.config.ocr_space)
+				response = requests.post('https://api.ocr.space/parse/image', files = {"image.png": image}, data = {'apikey': api_key, 'OCREngine': 2})
+				result = json.loads(response.content.decode())['ParsedResults'][0]['ParsedText']
+				result = result.split("\n") #OCREngine 1 (\r\n) - OCREngine (\n)
+				return result
+			except KeyError:
+				return
 
 	def filter_command(self, message):
 			command = message.content
