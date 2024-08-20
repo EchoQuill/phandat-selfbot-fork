@@ -86,7 +86,7 @@ class OwOManager:
 		with open(self.file, 'w') as file:
 			json.dump(config, file, indent = 4)
 		if amount > 0:
-			print(f"[-] Removed {amount} {"account" if amount == 1 else "accounts"}")
+			print(f"[-] Removed {amount} {'account' if amount == 1 else 'accounts'}")
 
 	def change_accounts(self, token, select_all = False):
 		with open(self.file) as file:
