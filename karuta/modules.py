@@ -21,6 +21,7 @@ class Modules:
 		self.client.data.discord.mention = ''.join(f"<@{i}>" for i in mentioner_id)
 
 	async def intro(self):
+		webhook = ""
 		if self.client.data.config.command['mode']:
 			webhook = f"**{self.client.data.emoji.arrow}Send `help` or `<@{self.client.user.id}> help`**"
 		await self.client.webhooks.send(
