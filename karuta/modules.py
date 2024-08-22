@@ -63,7 +63,6 @@ class Modules:
 		channel = self.client.get_channel(int(random.choice(self.client.data.config.drop_card['channel_id'])))
 		await channel.send(f"{self.client.data.discord.prefix}d")
 		self.client.logger.info(f"Dropped in {channel} ({channel.id})")
-		self.client.data.cooldown.drop_card = 1800 + time.time()
 		self.client.data.stat.drop_card += 1
 
 	async def grab_card(self, message, position, runtime, retry_times, image):
