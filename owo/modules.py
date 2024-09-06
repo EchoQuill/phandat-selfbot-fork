@@ -167,7 +167,7 @@ class Modules:
 					if len(self.client.OwOClients) == 1:
 						for quest in quests:
 							if self.client.conditions.single_quest(quest[0]):
-								self.client.data.discord.quest = quests[0]
+								self.client.data.discord.quest = quest[0]
 								break
 						else:
 							self.client.data.available.quest = False
