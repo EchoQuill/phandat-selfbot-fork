@@ -187,7 +187,7 @@ class Modules:
 					self.client.logger.info(f"{self.client.data.discord.quest[0]} ({self.client.data.discord.quest[1]})")
 					if re.findall(r"Say 'owo' [0-9]+ times!", self.client.data.discord.quest[0]):
 						self.client.data.quest.owo = True
-					elif re.findall(r"[0-9]+ from hunting and battling!", self.client.data.discord.quest[0]):
+					elif re.findall(r"[0-9]+ xp from hunting and battling!", self.client.data.discord.quest[0]):
 						self.client.data.quest.hunt = True
 						self.client.data.quest.battle = True
 					elif re.findall(r"Manually hunt [0-9]+ times!", self.client.data.discord.quest[0]):

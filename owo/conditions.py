@@ -23,7 +23,7 @@ class Conditions:
 	def single_quest(self, quest):
 		if re.findall(r"Say 'owo' [0-9]+ times!", quest):
 			return True
-		if re.findall(r"[0-9]+ from hunting and battling!", quest):
+		if re.findall(r"[0-9]+ xp from hunting and battling!", quest):
 			return True
 		if re.findall(r"Manually hunt [0-9]+ times!", quest):
 			return True
