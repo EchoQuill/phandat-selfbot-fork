@@ -97,13 +97,13 @@ class Tasks:
 		try:
 			if self.client.data.config.grind['owo'] or self.client.data.quest.owo:
 				await self.client.modules.send_owo()
-				await asyncio.sleep(random.randint(5, 10))
+			await asyncio.sleep(random.randint(5, 10))
 			if self.client.data.config.grind['hunt'] or self.client.data.quest.hunt:
 				await self.client.modules.send_hunt()
-				await asyncio.sleep(random.randint(5, 10))
+			await asyncio.sleep(random.randint(5, 10))
 			if (self.client.data.config.grind['battle'] or self.client.data.quest.battle) and not self.client.data.checking.block_battle:
 				await self.client.modules.send_battle()
-				await asyncio.sleep(random.randint(5, 10))
+			await asyncio.sleep(random.randint(5, 10))
 			if self.client.data.config.grind['quote']:
 				await self.client.modules.send_quote()
 		except Exception as e:
