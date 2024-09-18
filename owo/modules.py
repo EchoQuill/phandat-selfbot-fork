@@ -53,7 +53,7 @@ class Modules:
 		self.client.logger.info(f"Sent {self.client.data.discord.prefix}prefix")
 		self.client.data.stat.command += 1
 		try:
-			owo_prefix_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['the current prefix'], []), timeout = 5)
+			owo_prefix_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['the current prefix'], []), timeout = 10)
 			self.client.data.discord.prefix = re.findall(r"`(.*?)`", owo_prefix_message.content)[0]
 			self.client.logger.info(f"OwO prefix is currently {self.client.data.discord.prefix}")
 		except asyncio.TimeoutError:
@@ -79,7 +79,7 @@ class Modules:
 				self.client.logger.info(f"Sent {self.client.data.discord.prefix}{command}")
 				self.client.data.stat.command += 1
 				try:
-					await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], []), timeout = 5)
+					await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], []), timeout = 10)
 				except asyncio.TimeoutError:
 					self.client.logger.warning(f"!!! OwO doesn't respond !!!")
 					self.client.logger.info(f"Wait for 30 minutes")
@@ -153,7 +153,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}q")
 			self.client.data.stat.command += 1
 			try:
-				quest_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], []) and message.embeds and message.embeds[0].description and f"These quests belong to <@{self.client.user.id}>" in message.embeds[0].description, timeout = 5)
+				quest_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], []) and message.embeds and message.embeds[0].description and f"These quests belong to <@{self.client.user.id}>" in message.embeds[0].description, timeout = 10)
 				if "You finished all of your quests" in quest_message.embeds[0].description:
 					self.client.data.available.quest = False
 					next_quest = self.client.conditions.reset_time()
@@ -283,7 +283,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}daily")
 			self.client.data.stat.command += 1
 			try:
-				daily_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [str(self.client.data.discord.nickname)], ['next daily', 'Nu']), timeout = 5)
+				daily_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [str(self.client.data.discord.nickname)], ['next daily', 'Nu']), timeout = 10)
 				daily_again = self.client.conditions.reset_time()
 				self.client.data.cooldown.daily = daily_again + time.time()
 				if "next daily" in daily_message.content:
@@ -381,7 +381,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}hb 1d")
 			self.client.data.stat.command += 1
 			try:
-				huntbot_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], ['Please include your password', 'Here is your password!', 'BACK IN', 'BACK WITH']), timeout = 5)
+				huntbot_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], ['Please include your password', 'Here is your password!', 'BACK IN', 'BACK WITH']), timeout = 10)
 				if self.client.conditions.message(huntbot_message, True, True, [str(self.client.data.discord.nickname), 'Please include your password'], []):
 					retry_huntbot = re.findall(r"(?<=Password will reset in )(\d+)", huntbot_message.content)
 					retry_huntbot = int(int(retry_huntbot[0]) * 60)
@@ -399,7 +399,7 @@ class Modules:
 					self.client.logger.info(f"Sent {self.client.data.discord.prefix}hb 1d {answer}")
 					self.client.data.stat.command += 1
 					try:
-						huntbot_verification_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [str(self.client.data.discord.nickname)], ['YOU SPENT', 'Wrong password']), timeout = 5)
+						huntbot_verification_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [str(self.client.data.discord.nickname)], ['YOU SPENT', 'Wrong password']), timeout = 10)
 						if "YOU SPENT" in huntbot_verification_message.content:
 							self.client.logger.info(f"Submitted huntbot successfully")
 							await self.client.webhooks.send(
@@ -452,7 +452,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}dt")
 			self.client.data.stat.command += 1
 			try:
-				glitch_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], ['are available', 'not available']), timeout = 5)
+				glitch_message = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [], ['are available', 'not available']), timeout = 10)
 				if "are available" in glitch_message.content:
 					glitch_end = re.findall("[0-9]+", re.findall(r"\*\*(.*?)\*\*", glitch_message.content)[2])
 					if len(glitch_end) == 1:
@@ -561,7 +561,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}run")
 			self.client.data.stat.command += 1
 			try:
-				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['tired to run'], []), timeout = 5)
+				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['tired to run'], []), timeout = 10)
 				run_again = self.client.conditions.reset_time()
 				self.client.data.cooldown.entertainment = run_again + time.time()
 				self.client.logger.info(f"Run for today is over ({datetime.timedelta(seconds = run_again)})")
@@ -575,7 +575,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}pup")
 			self.client.data.stat.command += 1
 			try:
-				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['no puppies'], []), timeout = 5)
+				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['no puppies'], []), timeout = 10)
 				pup_again = self.client.conditions.reset_time()
 				self.client.data.cooldown.entertainment = pup_again + time.time()
 				self.client.logger.info(f"Pup for today is over ({datetime.timedelta(seconds = pup_again)})")
@@ -589,7 +589,7 @@ class Modules:
 			self.client.logger.info(f"Sent {self.client.data.discord.prefix}piku")
 			self.client.data.stat.command += 1
 			try:
-				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['out of carrots'], []), timeout = 5)
+				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, ['out of carrots'], []), timeout = 10)
 				piku_again = self.client.conditions.reset_time()
 				self.client.data.cooldown.entertainment = piku_again + time.time()
 				self.client.logger.info(f"Piku for today is over ({datetime.timedelta(seconds = piku_again)})")
@@ -648,7 +648,7 @@ class Modules:
 			self.client.logger.info(f"Sent {result['code']}")
 			self.client.data.stat.command += 1
 			try:
-				captcha_verification = await self.client.wait_for("message", check = lambda message: message.channel.id == self.client.data.bot.dm_channel.id and any(text in message.content for text in ['👍', '🚫']), timeout = 5)
+				captcha_verification = await self.client.wait_for("message", check = lambda message: message.channel.id == self.client.data.bot.dm_channel.id and any(text in message.content for text in ['👍', '🚫']), timeout = 10)
 				if "👍" in captcha_verification.content:
 					self.client.logger.info(f"Solved Image Captcha successfully")
 					await self.client.webhooks.send(
@@ -972,7 +972,8 @@ class Modules:
 		self.client.logger.info(f"Sent {self.client.data.discord.prefix}inv")
 		self.client.data.stat.command += 1
 		try:
-			inv = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [f'{str(self.client.data.discord.nickname)}\'s Inventory'], []), timeout = 5)
+			inv = await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [f'{str(self.client.data.discord.nickname)}\'s Inventory'], []), timeout = 10)
+			self.client.data.discord.inventory = inv.content
 			inv = [int(item) for item in re.findall(r"`(.*?)`", inv.content) if item.isnumeric()]
 			if self.client.data.available.selfbot and self.client.data.config.gem['open_box'] and 50 in inv:
 				await self.client.data.discord.channel.send(f"{self.client.data.discord.prefix}lb all")
@@ -1015,7 +1016,7 @@ class Modules:
 			self.client.data.stat.gem += 1
 			self.client.data.checking.no_gem = False
 			try:
-				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [str(self.client.data.discord.nickname), 'active Special gem or you do not own'], []), timeout = 5)
+				await self.client.wait_for("message", check = lambda message: self.client.conditions.message(message, True, True, [str(self.client.data.discord.nickname), 'active Special gem or you do not own'], []), timeout = 10)
 				self.client.data.available.special_pet = False
 			except asyncio.TimeoutError:
 				pass

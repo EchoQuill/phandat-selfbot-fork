@@ -8,7 +8,7 @@ class Quest:
 
 	async def send_message(self, token, channel_id, content):
 		try:
-			res = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", headers = {"Authorization": token}, json = {"content": content}, timeout = 5)
+			res = requests.post(f"https://discord.com/api/v9/channels/{channel_id}/messages", headers = {"Authorization": token}, json = {"content": content}, timeout = 10)
 			if res.status_code != 200:
 				self.client.logger.error(f"Couldn't send message ({res.status_code}) | {token} | {channel_id}")
 		except requests.Timeout:
@@ -33,7 +33,7 @@ class Quest:
 			client.logger.info(f"Sent {content}")
 			client.data.stat.command += 1
 			try:
-				battle_message = await self.client.wait_for("message", check = lambda message: message.channel.id == channel and ((self.client.conditions.message(message, True, False, [f'<@{self.client.user.id}>'], []) and message.embeds and "owo ab" in message.embeds[0].description) or self.client.conditions.message(message, True, False, ['🚫', 'There is already a pending battle!', str(nickname)], [])), timeout = 5)
+				battle_message = await self.client.wait_for("message", check = lambda message: message.channel.id == channel and ((self.client.conditions.message(message, True, False, [f'<@{self.client.user.id}>'], []) and message.embeds and "owo ab" in message.embeds[0].description) or self.client.conditions.message(message, True, False, ['🚫', 'There is already a pending battle!', str(nickname)], [])), timeout = 10)
 				if self.client.conditions.message(battle_message, True, False, ['🚫', 'There is already a pending battle!', str(nickname)], []):
 					self.client.logger.warning(f"There is already a pending battle, retry after 10 minutes")
 					await asyncio.sleep(600)
