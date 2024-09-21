@@ -74,7 +74,7 @@ class Modules:
 				if self.client.conditions.message(message, True, True, [], []):
 					break
 			else:
-				command = random.choice(['h', 'b', 'ping'])
+				command = random.choice(['h', 'hunt', 'b', 'battle'])
 				await self.client.data.discord.channel.send(f"{self.client.data.discord.prefix}{command}")
 				self.client.logger.info(f"Sent {self.client.data.discord.prefix}{command}")
 				self.client.data.stat.command += 1
